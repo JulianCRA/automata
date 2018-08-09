@@ -1,0 +1,140 @@
+@import url("slider.css");
+
+@font-face {
+    font-family: noto;
+	src: url("/fonts/NotoSans-Regular.ttf");
+	font-weight: normal;
+}
+
+@font-face {
+    font-family: noto;
+	src: url("/fonts/NotoSans-Bold.ttf");
+	font-weight: bold;
+}
+
+*,
+*:before,
+*:after {
+	margin: 0;
+	padding: 0;
+}
+
+/* no grid support? */
+.sidebar {
+	float: left;
+	width: 19.1489%;
+}
+
+.content {
+	float: right;
+	width: 79.7872%;
+	text-align: center;
+}
+
+/* make a grid */
+
+.wrapper {
+	min-width: 970px;
+	max-width: 1080px;
+	margin: 7px auto;
+	padding: 0 7px;
+	display: grid;
+	grid-template-columns: 4fr 10fr;
+	grid-gap: 5px;
+}
+
+.wrapper > * {
+	background-color: #315297;
+	color: #dddddd;
+	border-radius: 5px;
+	padding: 20px;
+}
+
+.header,
+.footer {
+	grid-column: 1 / -1;
+	/* needed for the floated layout */
+	clear: both;
+	
+}
+
+.header{
+	padding: 10px 15px;
+	justify-content: space-evenly;
+}
+
+/* We need to set the widths used on floated items back to auto, and remove the bottom margin as when we have grid we have gaps. */
+@supports (display: grid) {
+	.wrapper > * {
+		width: auto;
+		margin: 0;
+	}
+}
+
+.header>ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: noto;
+}
+
+li{
+	/*background-color: coral;*/
+	box-sizing: border-box;
+	flex: 0 0 auto;
+}
+
+.menu-button {
+	/*box-sizing: border-box;
+	flex: 0 0 auto;*/
+	margin: 5px;
+	border-radius: 10px;
+	background-color: #dddddd1a;
+	color: #ffffff;
+	text-align: center;
+	padding: 12px;
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+	border: none;
+}
+
+.menu-button::-moz-focus-inner {
+  border: 0;
+}
+
+.menu-button:hover {
+	box-shadow: 0px 0px 0px 1.5px #eeeeee inset;
+	/*box-sizing: border-box;*/
+}
+
+.menu-button:focus {
+	outline: 0;
+	background-color: #eeeeee;
+	color: #444;
+}
+
+#gridboard{
+	background-color: transparent;
+	display: inline-block;
+}
+
+#ghlink{
+	display: inline-block;
+	width: 51px;
+}
+#ghlink > img{
+	width: 50px;
+	height: 50px;
+}
+#ghlink > label{
+	margin-bottom: 0;
+	font-weight: bold;
+	font-size: 10px;
+	color: #ffffff;
+	cursor: pointer;
+}
