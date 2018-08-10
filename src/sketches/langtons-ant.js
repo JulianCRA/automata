@@ -15,7 +15,7 @@ export default function langtons_ant(p) {
     let grid;
   
     let canvas;
-  
+    
     p.myCustomRedrawAccordingToNewPropsHandler = function(props){
 		gridWidth = props.w || 20;
 		gridHeight = props.h || 20;
