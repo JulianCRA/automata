@@ -30,10 +30,7 @@ export default function langtons_ant(p) {
 	}
    
     p.setup = function(){
-		console.log("inisk now setup");
-		if(canvas) canvas = null;
-
-        canvas = p.createCanvas(600, 600);
+		canvas = p.createCanvas(600, 600);
 		canvas.mouseClicked(p.addAnt);
         p.noStroke();
         

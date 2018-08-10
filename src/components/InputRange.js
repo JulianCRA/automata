@@ -1,0 +1,37 @@
+import React from 'react';
+
+export default class InputRange extends React.Component{
+	constructor(props){
+		super(props);
+		this.state = {
+			value : props.value || props.min || 1,
+			minimum : props.min || 0,
+			maximum : props.maximum || 100,
+			step : props.step || 1,
+			label : (props.label || "value") + " : "
+		}
+	}
+
+	render(){
+		return(
+			<div>
+				<input 
+					className = "slider"
+					type = "range" 
+					min = {this.state.min}
+					max = {this.state.max}
+					step = {this.state.step}
+					value = {this.state.value}
+					onChange = {(event) => this.setState({value: event.target.value})}
+				/>
+				<label className = "slider-label">
+					{this.state.label + this.state.value}
+				</label>
+			</div>
+		);
+	}
+
+	getValue(){
+		return this.state.value * 1;
+	}
+}
