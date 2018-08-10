@@ -1,4 +1,6 @@
-var belusovzhabotinsky = function( p ) {
+import Grid from '../Grid';
+
+export default function bz_reaction ( p ) {
     let grid;
 
     let gridWidth;
@@ -11,18 +13,22 @@ var belusovzhabotinsky = function( p ) {
     let k2;
     let g;
 
+    let sampledImg;
+    let colorDiff;
+
     let canvas;
     let textures;
     
     p.setup = function(){
-        p.initSketch(120, 120, 1, 32, 4, 1, 10);
+        p.initSketch(200, 200, 2, 40, 2, 1, 10);
     }
     
     p.initSketch = function(w, h, seed, states, kk1, kk2, gg){
-        canvas = p.createCanvas(600, 600, p.P2D);
-        canvas.doubleClicked = function(){p.doubleClicked();};
+        canvas = p.createCanvas(600, 600);
+        p.noStroke();
+        p.noSmooth();
         //p.noLoop();
-        //p.frameRate(12);
+        //p.frameRate(15);
 
         gridWidth = w / 1;
         gridHeight = h / 1;
@@ -33,6 +39,8 @@ var belusovzhabotinsky = function( p ) {
         k1 = kk1 / 1;
         k2 = kk2 / 1;
         g = gg / 1;
+
+        colorDiff = 255/n;
 
         grid = new Grid(gridWidth, gridHeight, 0);
         grid.shuffle(seed/1, n);
@@ -67,21 +75,50 @@ var belusovzhabotinsky = function( p ) {
         img.updatePixels();
         p.textures[0] = img;
         //p.textures[0] = p.textures[1];
+
+        p.initSampler();
     }
+
+    p.initSampler = function(baseColor = [255, 255, 255]){
+		
+		if(sampledImg) sampledImg = null;
+
+		sampledImg = p.createImage(gridWidth, gridHeight);
+		sampledImg.loadPixels();
+		let pixpos;
+		for(let i = 0; i < gridWidth; i++){
+			for(let j = 0; j < gridHeight; j++){
+				pixpos = (j * gridWidth + i) * 4;
+				sampledImg.pixels[pixpos] = baseColor[0];
+				sampledImg.pixels[pixpos+1] = baseColor[1];
+				sampledImg.pixels[pixpos+2] = baseColor[2];
+				sampledImg.pixels[pixpos+3] = 0;
+			}
+		}
+	}
 
     p.draw = function(){
         p.clear();
         for(let i = 0; i < gridWidth; i++){
             for(let j = 0; j < gridHeight; j++){
                 p.evaluateCell(i, j);
-                p.image(p.textures[grid.current[i][j]], i*cellWidth, j*cellHeight);
+                //p.image(p.textures[grid.current[i][j]], i*cellWidth, j*cellHeight);
             }
         }
         grid.iterateAll();
+
+        for(let i = 0; i < gridWidth; i++){
+			for(let j = 0; j < gridHeight; j++){
+				sampledImg.pixels[((j*gridWidth+i)*4)+3] = grid.current[i][j]*colorDiff;
+			}
+		}
+		sampledImg.updatePixels();
+		
+		p.image(sampledImg, 0, 0, p.width, p.height);
     }
 
     p.evaluateCell = function(xpos, ypos){
-        let results = grid.getNeighborhood(xpos, ypos, 1, false);   // Moore neighborhood with Tchebychev distance of 2
+        let results = grid.getNeighborhood(xpos, ypos, 2, false);   // Moore neighborhood with Tchebychev distance of 2
         let infected = 0;
         let ill = 0;
         let sum = 0;
@@ -109,9 +146,5 @@ var belusovzhabotinsky = function( p ) {
         
         if(newState > n) newState = n;
         grid.next[xpos][ypos] = newState;
-    }
-
-    p.doubleClicked = function(){
-        p.redraw();
     }
 }
