@@ -1,5 +1,7 @@
-var forestfire = function( p ) {
+import Grid from '../Grid';
 
+export default function forest_fire( p ) {
+    const _CANVAS_SIZE = 600;
     const _EMPTY = 0;
     const _BURNING = 1;
     const _TREE = 2;
@@ -10,45 +12,45 @@ var forestfire = function( p ) {
     let cellWidth;
     let cellHeight;
 
+    let autocombustion;
     let combustion;         // spontaneous combustion probablilty
     let resistance;         // fire resitance
     let germination;        // tree germination probability
     let recovery;           // soil recovery rate
     let toroidal;           // toroidal plane?
 
-    p.grid;
-    let deadtime;
     let canvas;
+    let grid;
+    let deadtime;
     
     p.setup = function() {
-        p.initSketch(600, 600, 0.000001, 0.40, 0.005, 0.00000001, false);
+        canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
+        canvas.mouseClicked(p.lightningStrike);
+        p.noStroke();
+        p.background('forestgreen');
     }
-    p.initSketch = function(w, h, com, res, ger, rec, tor = true){
-        canvas = p.createCanvas(600, 600);
-        canvas.doubleClicked = function(){p.doubleClicked();};
 
-        gridWidth = w / 1;
-        gridHeight = h / 1;
-        cellWidth = p.width / gridWidth;
-        cellHeight = p.height / gridHeight;
-
-        combustion = com / 1;
-        resistance = res  / 1;
-        germination = ger / 1;
-        recovery = rec / 1;
-        toroidal = tor;
+    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
         
+        if(canvas) p.background('forestgreen');
+        gridWidth = props.w || 300;
+		gridHeight = props.h || 300;
+        cellWidth = _CANVAS_SIZE / gridWidth;
+        cellHeight = _CANVAS_SIZE / gridHeight;
+
+        autocombustion = props.autocomb && true;
+        combustion = props.comb || 0.000001;
+        resistance = props.res || 0.4;
+        germination = props.ger || 0.005;
+        recovery = props.rec || 0.00000001;
+        toroidal = props.t && true;
+
         deadtime = new Array(gridWidth);
         for(let i = 0; i < deadtime.length; i++){
             deadtime[i] = new Array(gridHeight);
         }
 
-        p.grid = new Grid(gridWidth, gridHeight, _TREE);
-       
-        p.noStroke();
-        //p.noLoop();
-        p.fill("forestgreen");
-        p.rect(0,0,p.width,p.height);
+        grid = new Grid(gridWidth, gridHeight, _TREE);
     }
 
     p.draw = function(){
@@ -56,8 +58,8 @@ var forestfire = function( p ) {
             for (let j = 0; j < gridHeight; j++){
                 
                 p.evaluateCell(i, j);
-                if(p.grid.cellChangedState(i, j)){
-                    switch(p.grid.next[i][j]){
+                if(grid.cellChangedState(i, j)){
+                    switch(grid.next[i][j]){
                         case _BURNING:
                             p.fill("orangered");
                             break;
@@ -70,51 +72,56 @@ var forestfire = function( p ) {
                         case _BURNT:
                             p.fill("black");
                             break;
+                        default:
+                            break;
                     }
                     p.rect(i * cellWidth, j * cellHeight, cellWidth, cellHeight);
                 }
             }
         }
-        p.grid.iterateAll();
+        grid.iterateAll();
+    }
+
+    p.lightningStrike = function(){
+        let xpos = Math.floor(p.mouseX/cellWidth);
+        let ypos = Math.floor(p.mouseY/cellHeight);
+        grid.next[xpos][ypos] = _BURNING;
+        grid.iterate(xpos, ypos);
     }
 
     p.evaluateCell = function(xpos, ypos){
-        if(p.grid.current[xpos][ypos] == _TREE){
+        if(grid.current[xpos][ypos] === _TREE){
             if(Math.random() > resistance){             // "Roll" for fire resistance
                 if(toroidal){                           // check toroidal neighborhood
-                    if( p.grid.current[xpos][ypos-1 > 0? ypos-1:gridHeight-1] == _BURNING ||
-                        p.grid.current[xpos-1 > 0? xpos-1:gridWidth-1][ypos] == _BURNING ||
-                        p.grid.current[xpos+1 > gridWidth-1? 0:xpos+1][ypos] == _BURNING ||
-                        p.grid.current[xpos][ypos+1 > gridHeight-1? 0:ypos+1] == _BURNING ){
-                            p.grid.next[xpos][ypos] = _BURNING;
+                    if( grid.current[xpos][ypos-1 > 0? ypos-1:gridHeight-1] === _BURNING ||
+                        grid.current[xpos-1 > 0? xpos-1:gridWidth-1][ypos] === _BURNING ||
+                        grid.current[xpos+1 > gridWidth-1? 0:xpos+1][ypos] === _BURNING ||
+                        grid.current[xpos][ypos+1 > gridHeight-1? 0:ypos+1] === _BURNING ){
+                            grid.next[xpos][ypos] = _BURNING;
                     }
                 }else{                                  // check planar neighborhood
-                    if( p.grid.current[xpos][ypos-1 > 0? ypos-1:ypos] == _BURNING ||
-                        p.grid.current[xpos-1 > 0? xpos-1:xpos][ypos] == _BURNING ||
-                        p.grid.current[xpos+1 > gridWidth-1? gridWidth-1:xpos+1][ypos] == _BURNING ||
-                        p.grid.current[xpos][ypos+1 > gridHeight-1? gridHeight-1:ypos+1] == _BURNING ){
-                            p.grid.next[xpos][ypos] = _BURNING;
+                    if( grid.current[xpos][ypos-1 > 0? ypos-1:ypos] === _BURNING ||
+                        grid.current[xpos-1 > 0? xpos-1:xpos][ypos] === _BURNING ||
+                        grid.current[xpos+1 > gridWidth-1? gridWidth-1:xpos+1][ypos] === _BURNING ||
+                        grid.current[xpos][ypos+1 > gridHeight-1? gridHeight-1:ypos+1] === _BURNING ){
+                            grid.next[xpos][ypos] = _BURNING;
                     }
                 }
-            }else if(Math.random() < combustion){       // "Roll" for spontaneous combustion
-                p.grid.next[xpos][ypos] = _BURNING;
+            }else if(autocombustion && Math.random() < combustion){       // "Roll" for spontaneous combustion
+                grid.next[xpos][ypos] = _BURNING;
             }
         }
-        else if(p.grid.current[xpos][ypos] == _BURNING){
-            p.grid.next[xpos][ypos] = _BURNT;
+        else if(grid.current[xpos][ypos] === _BURNING){
+            grid.next[xpos][ypos] = _BURNT;
             deadtime[xpos][ypos] = recovery;
         }
-        else if(p.grid.current[xpos][ypos] == _BURNT){
+        else if(grid.current[xpos][ypos] === _BURNT){
             deadtime[xpos][ypos] += deadtime[xpos][ypos];// threshold to recover grows exponentially 
             if(Math.random() < deadtime[xpos][ypos])     // "Roll" for soil recovery
-                p.grid.next[xpos][ypos] = _EMPTY;
+                grid.next[xpos][ypos] = _EMPTY;
         }
-        else if(p.grid.current[xpos][ypos] == _EMPTY && Math.random() < germination){// "Roll" for germination
-            p.grid.next[xpos][ypos] = _TREE;
+        else if(grid.current[xpos][ypos] === _EMPTY && Math.random() < germination){// "Roll" for germination
+            grid.next[xpos][ypos] = _TREE;
         }
-    }
-
-    p.doubleClicked = function(){
-        p.redraw();
     }
 }

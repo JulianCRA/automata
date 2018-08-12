@@ -1,5 +1,7 @@
-var floodfill = function (p){
+import Grid from '../Grid';
 
+export default function flood_fill(p){
+    const _CANVAS_SIZE = 600;
     let gridWidth;
     let gridHeight;
     let cellWidth;
@@ -7,83 +9,114 @@ var floodfill = function (p){
 
     let canvas;
 
-    let colorList;
+    //let colorList;
     let regions
+    let showSeed;
+    let euclidean;
 
-    p.grid;
-    let colors;
+    let grid;
     let seed
-    p.pixStack;
+    let pixStack;
+    let sampledImg;
     
     p.setup = function(){
-        p.initSketch(200, 200, 600, 2);
-    }
-
-    p.initSketch = function(w, h, r, c){
         canvas = p.createCanvas(600,600);
-        canvas.doubleClicked = function(){p.doubleClicked();}
-        canvas.mouseClicked(startFill);
+        canvas.mouseClicked(p.startFill);
         p.noLoop();
+        p.noSmooth();
         p.noStroke();
-        
-        gridWidth = w / 1;
-        gridHeight = h / 1;
-        cellWidth = p.width / gridWidth;
-        cellHeight = p.height / gridHeight;
-
-        regions = r / 1;
-        colorList = new Array(c / 1);
-        colors = new Array(gridWidth);
-        p.grid = new Grid(gridWidth, gridHeight);
-        seed = new Array();
-        p.pixStack = new Array();
-
-        for(let i = 0; i < colorList.length; i++){
-            colorList[i] = p.color(p.random(255),p.random(255),p.random(255));
-        }
-       
-        for(let i = 0; i < regions; i++){
-            let rColor = Math.floor(Math.random()*colorList.length);
-            let xpos = Math.floor(Math.random()*gridWidth);
-            let ypos = Math.floor(Math.random()*gridHeight);
-            seed.push({x:xpos, y:ypos});
-            p.grid.current[xpos][ypos] = rColor + 1;
-        }
-        p.voronoi(seed, false);
     }
 
-    startFill = function(){
+    p.myCustomRedrawAccordingToNewPropsHandler = function(props){    
+        
+        
+        gridWidth = props.w || 50;
+		gridHeight = props.h || 50;
+        cellWidth = _CANVAS_SIZE / gridWidth;
+        cellHeight = _CANVAS_SIZE / gridHeight;
+
+        showSeed = props.s && true;
+        euclidean = props.e && true;
+
+        regions = props.r || ((euclidean) ? Math.floor(gridWidth*gridHeight/200) : Math.floor(gridWidth*gridHeight/400));
+        
+        grid = new Grid(gridWidth, gridHeight);
+        
+        seed = [];
+        pixStack = [];
+
+        //let c = props.c || 2;
+        //colorList = [];
+        //for(let i = 0; i < c; i++){
+        //    colorList.push(p.color(p.random(255),p.random(255),p.random(255)));
+        //}
+        let xpos;
+        let ypos;
+        for(let i = 0; i < regions; i++){
+            //let rColor = Math.floor(Math.random()*colorList.length);
+            //grid.current[xpos][ypos] = rColor + 1;
+
+            xpos = Math.floor(Math.random()*gridWidth);
+            ypos = Math.floor(Math.random()*gridHeight);
+            seed.push({x:xpos, y:ypos});
+            
+            grid.current[xpos][ypos] = Math.round(Math.random());
+        }
+        p.voronoi(seed, euclidean);
+        p.initSampler();
+
+        if(canvas) p.redraw();
+    }
+
+    p.initSampler = function(baseColor = [255, 255, 255]){
+		if(sampledImg) sampledImg = null;
+
+		sampledImg = p.createImage(gridWidth, gridHeight);
+		sampledImg.loadPixels();
+		let pixpos;
+		for(let i = 0; i < gridWidth; i++){
+			for(let j = 0; j < gridHeight; j++){
+				pixpos = (j * gridWidth + i) * 4;
+				sampledImg.pixels[pixpos] = baseColor[0];
+				sampledImg.pixels[pixpos+1] = baseColor[1];
+				sampledImg.pixels[pixpos+2] = baseColor[2];
+				sampledImg.pixels[pixpos+3] = 0;
+			}
+		}
+    }
+    
+    p.startFill = function(){
         let startX = Math.floor(p.mouseX/cellWidth);
         let startY = Math.floor(p.mouseY/cellHeight);
-        floodFill(startX, startY, p.grid.current[startX][startY], 0);
+        p.floodFill(startX, startY, grid.current[startX][startY], 1-grid.current[startX][startY]);
     }
 
-    floodFill = function(xpos, ypos, startState, newState){
-        if(startState!=newState)
-            p.pixStack.push({x:xpos, y:ypos});
+    p.floodFill = function(xpos, ypos, startState, newState){
+        if(startState!==newState)
+            pixStack.push({x:xpos, y:ypos});
         
-        while(p.pixStack.length > 0){
+        while(pixStack.length > 0){
             //console.log("tiki");
             let searchLeft = false;
             let searchRight = false;
-            let newPos = p.pixStack.pop();
+            let newPos = pixStack.pop();
 
             while(newPos.y > 0){
                 newPos.y--;
-                if(p.grid.current[newPos.x][newPos.y] != startState){
+                if(grid.current[newPos.x][newPos.y] !== startState){
                     newPos.y++;
                     break;
                 }
             }
             
             while(newPos.y < gridHeight){
-                if(p.grid.current[newPos.x][newPos.y] == startState){
-                    p.grid.current[newPos.x][newPos.y] = newState;
+                if(grid.current[newPos.x][newPos.y] === startState){
+                    grid.current[newPos.x][newPos.y] = newState;
                     
                     if(newPos.x > 0){
-                        if(p.grid.current[newPos.x-1][newPos.y] == startState){
+                        if(grid.current[newPos.x-1][newPos.y] === startState){
                             if(!searchLeft){
-                                p.pixStack.push({x:newPos.x-1, y:newPos.y});
+                                pixStack.push({x:newPos.x-1, y:newPos.y});
                                 searchLeft = true;
                             }
                         }
@@ -93,9 +126,9 @@ var floodfill = function (p){
                     }
 
                     if(newPos.x < gridWidth -1){
-                        if(p.grid.current[newPos.x+1][newPos.y] == startState){
+                        if(grid.current[newPos.x+1][newPos.y] === startState){
                             if(!searchRight){
-                                p.pixStack.push({x:newPos.x+1, y:newPos.y});
+                                pixStack.push({x:newPos.x+1, y:newPos.y});
                                 searchRight = true;
                             }
                         }
@@ -116,51 +149,56 @@ var floodfill = function (p){
     }
 
     p.draw = function(){
-        p.background(0);
-        
+        p.clear();
         for(let i = 0; i < gridWidth; i++){
             for(let j = 0; j < gridHeight; j++){
-                if(p.grid.current[i][j] == 0)
-                    p.fill('black');
-                else
-                    p.fill(colorList[p.grid.current[i][j]-1]);
-
-                p.rect(i*cellWidth, j*cellHeight, cellWidth, cellHeight);
+                sampledImg.pixels[((j*gridWidth+i)*4)+3] = grid.current[i][j]*255;
             }
         }
-        p.fill(255);
-        for(let i = 0; i < seed.length; i++){
-            p.ellipse((seed[i].x+0.5)*cellWidth, (seed[i].y+0.5)*cellHeight, 10, 10);
+        sampledImg.updatePixels();
+        p.image(sampledImg, 0, 0, p.width, p.height);
+        
+        if(showSeed){
+            p.fill([0, 0, 0]);
+            for(let i = 0; i < seed.length; i++){
+                p.ellipse((seed[i].x+0.5)*cellWidth, (seed[i].y+0.5)*cellHeight, 6, 6);
+            }
         }
     }
 
     p.voronoi = function(origin, euclidean = true){
+        let closest;
+        let distance;
+        let isItShorter;
+
+        if(euclidean){
+            isItShorter = function(ax, ay, bx, by){
+                if(distance * distance > (ax - bx)*(ax - bx) + (ay - by)*(ay - by)){
+                    distance = Math.hypot(ax - bx, ay - by);
+                    return true;
+                }
+                return false;
+            };
+        }else{
+            isItShorter = function(ax, ay, bx, by){
+                if(distance > Math.abs(bx - ax) + Math.abs(by - ay)){
+                    distance = Math.abs(bx - ax) + Math.abs(by - ay);
+                    return true;
+                }
+                return false;
+            };
+        }
+
         for(let i = 0; i < gridWidth; i++){
-            colors[i] = new Array(gridHeight);
             for(let j = 0; j < gridHeight; j++){
-                let closest;
-                let distance = gridWidth * gridHeight;
+                distance = gridWidth * gridHeight;
                 for(let k = 0; k < origin.length; k++){
-                    let dd = 0;
-                    if(euclidean){
-                        dd = p.dist(origin[k].x, origin[k].y, i, j);
-                    }
-                    else{
-                        dd = Math.abs(origin[k].x - i) + Math.abs(origin[k].y - j)
-                    }
-                    
-                    if(dd < distance){
+                    if(isItShorter(i, j, origin[k].x, origin[k].y)){
                         closest = origin[k];
-                        distance = dd;
                     }
                 }
-                p.grid.current[i][j] = p.grid.current[closest.x][closest.y];
+                grid.current[i][j] = grid.current[closest.x][closest.y];
             }
         }
-    }
-
-    p.doubleClicked = function(){
-        //p.redraw();
-        console.log("DOBKE");
     }
 }

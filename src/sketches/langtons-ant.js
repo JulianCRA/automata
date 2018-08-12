@@ -4,6 +4,7 @@ export default function langtons_ant(p) {
 
     const _ROTATE_LEFT = -1;
     const _ROTATE_RIGHT = 1;
+    const _CANVAS_SIZE = 600;
 
     let ants;
   
@@ -11,35 +12,29 @@ export default function langtons_ant(p) {
     let gridHeight;
     let cellWidth;
     let cellHeight;
-
+    
     let grid;
   
     let canvas;
     
-    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
-		gridWidth = props.w || 20;
-		gridHeight = props.h || 20;
-		ants = props.ants || [];
-
-		if(canvas) p.clear();
-		
-		cellWidth = p.width / gridWidth;
-        cellHeight = p.height / gridHeight;
-        
-        grid = new Grid(gridWidth, gridHeight, 0);
-	}
-   
     p.setup = function(){
-		canvas = p.createCanvas(600, 600);
+		canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
 		canvas.mouseClicked(p.addAnt);
         p.noStroke();
+    }
+    
+    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
+        if (canvas) p.clear();
+		gridWidth = props.w || 20;
+		gridHeight = props.h || 20;
+        ants = props.ants || [];
         
-        cellWidth = p.width / gridWidth;
-        cellHeight = p.height / gridHeight;
-        
-        grid = new Grid(gridWidth, gridHeight, 0);
-	}
+        cellWidth = _CANVAS_SIZE / gridWidth;
+        cellHeight = _CANVAS_SIZE / gridHeight;
 
+		grid = new Grid(gridWidth, gridHeight, 0);
+	}
+   
     p.draw = function(){
         for(let i = 0; i < ants.length; i++){
             p.drawAnt(ants[i]);

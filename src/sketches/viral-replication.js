@@ -15,9 +15,16 @@ export default function viral_replication(p){
 	let colorDiff;
 	let sampledImg;
 
+	p.setup = function(){
+		p.createCanvas(600, 600);
+		p.noStroke();
+		p.pixelDensity(1);
+		p.noSmooth();
+	}
+
 	p.myCustomRedrawAccordingToNewPropsHandler = function(props){
-		gridWidth = props.w || 100;
-		gridHeight = props.h || 100;
+		gridWidth = props.w || 200;
+		gridHeight = props.h || 200;
 
 		k1 = props.k1 / 100 || 55 / 100;
 		k2 = props.k2 / 100000 || 7000 / 100000;
@@ -32,33 +39,8 @@ export default function viral_replication(p){
 		
 		p.initSampler();
 	}
-	
-	p.setup = function(){
-		p.createCanvas(600, 600);
-		p.noStroke();
-		p.pixelDensity(1);
-		p.noSmooth();
-		//p.frameRate(4);
-		
-		gridWidth = 200;
-		gridHeight = 200;
-		
-		k1 = 55 / 100;
-		k2 = 7000 / 100000;
-		k3 = 35 / 100;
-
-		q = 55;
-		substeps = gridWidth * gridHeight;
-		colorDiff = 255/(q-1);
-
-		grid = new Grid(gridWidth, gridHeight);
-		grid.shuffle(substeps/2, q - 1);
-		
-		p.initSampler();
-	}
 
 	p.initSampler = function(baseColor = [255, 255, 255]){
-		
 		if(sampledImg) sampledImg = null;
 
 		sampledImg = p.createImage(gridWidth, gridHeight);

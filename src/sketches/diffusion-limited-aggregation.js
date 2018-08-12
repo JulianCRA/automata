@@ -1,125 +1,150 @@
-var diffusionlimitedaggregation = function (p){
+import Grid from '../Grid';
 
+export default function d_l_a( p ) {
+    const _CANVAS_SIZE = 600;
     let gridWidth;
-    let gridHeight;
-    let cellWidth;
-    let cellHeight;
+    let gridHeight
+    let substeps;
 
     let canvas;
-    let orangered;
 
     let q;
-
     let k1;
     let k2;
-    
-    p.grid;
-    let mobility;
-    
+    let toroidal;
+
+    let grid;
+    let mobilityTable;
+    let mobileCells;
+    let sampledImg;
+
     p.setup = function(){
-        p.initSketch(200, 200, 64, 5, 1);
-    }
-
-    p.initSketch = function(w, h, states, kk1, kk2){
-        canvas = p.createCanvas(600,600);
-        canvas.doubleClicked = function(){p.doubleClicked();}
+        canvas = p.createCanvas(_CANVAS_SIZE,_CANVAS_SIZE);
+        canvas.mouseClicked (p.immobilize);
         p.noStroke();
-        //p.noLoop();
-        p.frameRate(60);
-
-        gridWidth = w / 1;
-        gridHeight = h / 1;
-        cellWidth = p.width / gridWidth;
-        cellHeight = p.height / gridHeight;
-
-        k1 = kk1 / 1;
-        k2 = kk2 / 1;
-        q = states / 1;
-
-        mobility = new Array(gridWidth);
-        for(let i = 0; i < gridWidth; i++){
-            mobility[i] = new Array(gridHeight);
-        }
-
-        p.grid = new Grid(gridWidth, gridHeight);
-        let seedCells = p.grid.shuffle(k2, q);
-        for(let i = 0; i < seedCells.length; i++){
-            mobility[seedCells[i].x][seedCells[i].y] = false;
-        }
-        /*center = Math.floor(gridWidth/2);
-        p.grid.next[center][center] = q;
-        mobility[center][center] = false;*/
-        let otherCells = p.grid.shuffle(Math.floor(gridWidth*gridHeight*kk1/100), 5, q);
-        for(let i = 0; i < otherCells.length; i++){
-            mobility[otherCells[i].x][otherCells[i].y] = true;
-        }
-
-        orangered = p.color("orangered");
+        p.noSmooth();
     }
 
-    p.draw = function(){
-        let randX;
-        let randY;
-        let mobileCells = 0;
-        let keepGoing = true;
+    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
+        gridWidth = props.w || 200;
+        gridHeight = props.h || 200;
+        substeps = gridWidth * gridHeight;
+        toroidal = props.t && true;
+
+        q = props.q || 1;
+        k1 = props.k1 || 15;
+        k2 = props.k2 || 0;
+
+        mobileCells = Math.floor(substeps * k1 / 100);
+
+        mobilityTable = new Array(gridWidth);
+        for(let i = 0; i < gridWidth; i++){
+            mobilityTable[i] = new Array(gridHeight);
+        }
+
+        grid = new Grid(gridWidth, gridHeight);
+
+        let seedCells = grid.shuffle(k2, q);
+        for(let i = 0; i < seedCells.length; i++){
+            mobilityTable[seedCells[i].x][seedCells[i].y] = false;
+        }
+
+        let otherCells = grid.shuffle(mobileCells, 0, q);
+        for(let i = 0; i < otherCells.length; i++){
+            mobilityTable[otherCells[i].x][otherCells[i].y] = true;
+        }
+
+        p.initSampler();
+    }
+
+    p.initSampler = function(baseColor = [255, 255, 255]){
+		if(sampledImg) sampledImg = null;
+
+		sampledImg = p.createImage(gridWidth, gridHeight);
+		sampledImg.loadPixels();
+		let pixpos;
+		for(let i = 0; i < gridWidth; i++){
+			for(let j = 0; j < gridHeight; j++){
+				pixpos = (j * gridWidth + i) * 4;
+				sampledImg.pixels[pixpos] = baseColor[0];
+				sampledImg.pixels[pixpos+1] = baseColor[1];
+				sampledImg.pixels[pixpos+2] = baseColor[2];
+				sampledImg.pixels[pixpos+3] = 0;
+			}
+		}
+    }
+    
+    let randX;
+    let randY;
+    
+	
+	p.draw = function(){
+		p.clear();
+	
+		for(let i = 0; i < substeps; i++){
+			randX = Math.floor( Math.random() * gridWidth);
+			randY = Math.floor( Math.random() * gridHeight);
+			p.evaluateCell(randX, randY);
+		}
         
         for(let i = 0; i < gridWidth; i++){
-            for(let j = 0; j < gridHeight; j++){
-                randX = Math.floor(Math.random()*gridWidth);
-                randY = Math.floor(Math.random()*gridHeight);
-                p.evaluateCell(randX, randY);
-            }
-        }
-        p.background(0);
-        //p.fill(orangered);
-        for(let i = 0; i < gridWidth; i++){
-            for(let j = 0; j < gridHeight; j++){
-                if(p.grid.existsCellIn(i, j)){
-                    if(p.grid.current[i][j] == q){
-                        p.fill(orangered);
-                        //p.rect(i*cellWidth, j*cellHeight, cellWidth, cellHeight);
+			for(let j = 0; j < gridHeight; j++){
+                if(grid.existsCellIn(i, j)){
+                    if(grid.current[i][j] === q){
+                        sampledImg.pixels[((j*gridWidth+i)*4)+3] = 255;
                     }else{
-                        mobileCells++;
-                        p.fill(50);
+                        sampledImg.pixels[((j*gridWidth+i)*4)+3] = 64;
                     }
-                    p.rect(i*cellWidth, j*cellHeight, cellWidth, cellHeight);
+                }else{
+                    sampledImg.pixels[((j*gridWidth+i)*4)+3] = 0;
                 }
-            }
-        }
-        if(mobileCells == 0){
-            console.log("STOP");
+			}
+		}
+		sampledImg.updatePixels();
+		
+        p.image(sampledImg, 0, 0, p.width, p.height);
+
+        if(mobileCells <= 0) {
             p.noLoop();
+            console.log("STOPPED");
         }
     }
 
     p.evaluateCell = function(xpos, ypos){
-        if(mobility[xpos][ypos] == true){
-            let n = p.grid.getNeighborhood(xpos, ypos, 1, false);
+        
+        if(mobilityTable[xpos][ypos] === true){
+            let n = grid.getNeighborhood(xpos, ypos, 1, toroidal);
             let hasFixedNeighbor = false;
             for(let i = 0; i < n.neighborhood.length; i++){
-                if(mobility[n.neighborhood[i].x][n.neighborhood[i].y] == false){
+                if(mobilityTable[n.neighborhood[i].x][n.neighborhood[i].y] === false){
                     hasFixedNeighbor = true;
                     break;
                 }
             }
 
             if(hasFixedNeighbor){
-                p.grid.current[xpos][ypos] = q;
-                mobility[xpos][ypos] = false;
+                grid.current[xpos][ypos] = q;
+                mobilityTable[xpos][ypos] = false;
+                mobileCells--;
             }
             else{
                 if(n.hasEmptySpaces){
                     let newPos = n.emptySpaces[Math.floor(Math.random() * n.emptySpaces.length)];
-                    p.grid.current[newPos.x][newPos.y] = p.grid.current[xpos][ypos];
-                    mobility[newPos.x][newPos.y] = true;
-                    p.grid.current[xpos][ypos] = -1;
-                    mobility[xpos][ypos] = undefined;
+                    grid.current[newPos.x][newPos.y] = grid.current[xpos][ypos];
+                    mobilityTable[newPos.x][newPos.y] = true;
+                    grid.current[xpos][ypos] = -1;
+                    mobilityTable[xpos][ypos] = undefined;
                 }
             }
         }
     }
 
-    p.doubleClicked = function(){
-        p.redraw();
+    p.immobilize = function(){
+        
+        let xpos = Math.floor(p.mouseX/(_CANVAS_SIZE/gridWidth));
+        let ypos = Math.floor(p.mouseY/(_CANVAS_SIZE/gridHeight));
+        if(mobilityTable[xpos][ypos]) mobileCells--;
+        grid.current[xpos][ypos] = q;
+        mobilityTable[xpos][ypos] = false;
     }
 }

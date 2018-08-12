@@ -22,9 +22,11 @@ export default class Grid{
     shuffle(amount, state, protect = -2){
         //let cells = new Array();
         let cells = [];
+        let randx;
+        let randy;
         for(let i = 0; i < amount; i++){
-            let randx = Math.floor(Math.random()*(this.width));
-            let randy = Math.floor(Math.random()*(this.height));
+            randx = Math.floor(Math.random()*(this.width));
+            randy = Math.floor(Math.random()*(this.height));
             if(this.next[randx][randy] !== state && this.next[randx][randy] !== protect){
                 this.next[randx][randy] = state;
                 cells.push({x:randx, y:randy});
@@ -59,10 +61,10 @@ export default class Grid{
                     let yy = ypos + j;
 
                     if(toroidal){
-                        if(xx === -1) xx = this.width - 1;
-                        else if(xx === this.width ) xx = 0;
-                        if(yy === -1) yy = this.height - 1;
-                        else if(yy === this.height ) yy = 0;
+                        if(xx <= -1) xx = this.width - 1;
+                        else if(xx >= this.width ) xx = 0;
+                        if(yy <= -1) yy = this.height - 1;
+                        else if(yy >= this.height ) yy = 0;
                     }else{
                         if(xx < 0 || xx > this.width - 1 || yy < 0 || yy > this.height - 1){
                             killAfterBounds = true;
