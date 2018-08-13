@@ -11,7 +11,7 @@ import P5Wrapper from './components/react-p5-wrapper';
 export default class P5SketchComponent extends Component {
 	render() {
 		return (
-			<P5Wrapper sketch={flood_fill} w={300} h={300} s={true} ></P5Wrapper>
+			<P5Wrapper sketch={flood_fill} w={30} h={30} q={40} s={false} e={false}></P5Wrapper>
 		);
 	}
 }
