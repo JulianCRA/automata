@@ -19,6 +19,12 @@ export default function flood_fill(p){
     let seed;
     let painters;
 
+    let hasStarted;
+
+    p.preload = function(){
+        if(!hasStarted) p.customRedraw();
+    }
+
     p.setup = function(){
         canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
         canvas.mouseClicked(p.dropPainter);
@@ -30,21 +36,23 @@ export default function flood_fill(p){
         p.noLoop();
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
-        gridWidth = props.w || 50;
-        gridHeight = props.h || 50;
+    p.customRedraw = function(config = {}){
+        hasStarted = true;
+        
+        gridWidth = config.w || 50;
+        gridHeight = config.h || 50;
         cellWidth = _CANVAS_SIZE / gridWidth;
         cellHeight = _CANVAS_SIZE / gridHeight;
 
-        showSeed = props.s === true;
-        euclidean = props.e && true;
+        showSeed = config.s === true;
+        euclidean = config.e && true;
         
         painters = [];
         p.initSampler();
         
         grid = new Grid(gridWidth, gridHeight);
 
-        let q = props.q || 60;
+        let q = config.q || 60;
         p.generateSeed(q);
 
         p.voronoi(seed, euclidean);
@@ -104,7 +112,7 @@ export default function flood_fill(p){
                 grid.current[painter.x][painter.y] = 1 - grid.current[painter.x][painter.y];
 
                 if(painter.x > 0){
-                    if(grid.current[painter.x-1][painter.y] == painter.startState){
+                    if(grid.current[painter.x-1][painter.y] === painter.startState){
                         if(!painter.searchLeft){
                             painter.buckets.push({x:painter.x-1, y:painter.y});
                             painter.searchLeft = true;
@@ -116,7 +124,7 @@ export default function flood_fill(p){
                 }
 
                 if(painter.x < gridWidth-1){
-                    if(grid.current[painter.x+1][painter.y] == painter.startState){
+                    if(grid.current[painter.x+1][painter.y] === painter.startState){
                         if(!painter.searchRight){
                             painter.buckets.push({x:painter.x+1, y:painter.y});
                             painter.searchRight = true;
@@ -133,7 +141,8 @@ export default function flood_fill(p){
                 if(painter.buckets.length === 0){
                     painters.splice(index, 1);
                 }else{
-                    let bck = painter.buckets.pop();
+                    //let bck = painter.buckets.pop();
+                    let bck = painter.buckets.shift();
                     painter.x = bck.x;
                     painter.y = bck.y;
                     painter.moveUp = true;
@@ -150,12 +159,13 @@ export default function flood_fill(p){
         paintersLayer.clear();
         
         for(let i = 0; i < painters.length; i++){
-            paintersLayer.fill('red');
-            paintersLayer.rect(painters[i].x*cellWidth, painters[i].y*cellHeight, cellWidth, cellHeight);
+            paintersLayer.fill('orangered');
+            paintersLayer.rect(painters[i].x*cellWidth, painters[i].y*cellHeight, cellWidth-1, cellHeight-1);
 
             for(let j = 0; j < painters[i].buckets.length; j++){
-                paintersLayer.fill('orange');
-                paintersLayer.rect(painters[i].buckets[j].x*cellWidth, painters[i].buckets[j].y*cellHeight, cellWidth, cellHeight);
+                paintersLayer.noFill();
+                paintersLayer.stroke('orangered');
+                paintersLayer.rect(painters[i].buckets[j].x*cellWidth, painters[i].buckets[j].y*cellHeight, cellWidth-1, cellHeight-1);
             }
         }
         p.image(paintersLayer, 0, 0);

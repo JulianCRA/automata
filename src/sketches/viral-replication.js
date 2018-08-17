@@ -15,6 +15,12 @@ export default function viral_replication(p){
 	let colorDiff;
 	let sampledImg;
 
+	let hasStarted;
+
+    p.preload = function(){
+        if(!hasStarted) p.customRedraw();
+    }
+
 	p.setup = function(){
 		p.createCanvas(600, 600);
 		p.noStroke();
@@ -22,14 +28,15 @@ export default function viral_replication(p){
 		p.noSmooth();
 	}
 
-	p.myCustomRedrawAccordingToNewPropsHandler = function(props){
-		gridWidth = props.w || 200;
-		gridHeight = props.h || 200;
+	p.customRedraw = function(config = {}){
+        hasStarted = true;
+		gridWidth = config.w || 200;
+		gridHeight = config.h || 200;
 
-		k1 = props.k1 / 100 || 55 / 100;
-		k2 = props.k2 / 100000 || 7000 / 100000;
-		k3 = props.k3 / 100 || 35 / 100;
-		q = props.q || 50;
+		k1 = config.k1 / 100 || 55 / 100;
+		k2 = config.k2 / 100000 || 7000 / 100000;
+		k3 = config.k3 / 100 || 35 / 100;
+		q = config.q || 50;
 
 		substeps = gridWidth * gridHeight;
 		colorDiff = 255/(q-1);

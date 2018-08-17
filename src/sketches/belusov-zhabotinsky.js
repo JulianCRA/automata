@@ -17,27 +17,35 @@ export default function bz_reaction ( p ) {
     let sampledImg;
     let colorDiff;
 
+    let hasStarted;
+
+    p.preload = function(){
+        if(!hasStarted) p.customRedraw();
+    }
+
     p.setup = function(){
 		p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
 		p.noStroke();
 		p.pixelDensity(1);
-		p.noSmooth();
-	}
+        p.noSmooth();
+    }
     
-    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
-        gridWidth = props.w || 200;
-        gridHeight = props.h || 200;
-        toroidal = props.t && true;
-        distance = props.d || 2;
+    p.customRedraw = function(config = {}){
+        hasStarted = true;
+
+        gridWidth = config.w || 200;
+        gridHeight = config.h || 200;
+        toroidal = config.t && true;
+        distance = config.d || 2;
         
-        n = props.n || 32;
-        k1 = props.k1 || 4;
-        k2 = props.k2 || 1;
-        g = props.g || 10;
+        n = config.n || 32;
+        k1 = config.k1 || 4;
+        k2 = config.k2 || 1;
+        g = config.g || 10;
 
         colorDiff = 255 / n;
 
-        let seed = props.seed || 4;
+        let seed = config.seed || 4;
 
         grid = new Grid(gridWidth, gridHeight, 0);
         grid.shuffle(seed/1, n);
@@ -64,7 +72,7 @@ export default function bz_reaction ( p ) {
 
     p.draw = function(){
         p.clear();
-
+        
         grid.iterateAll();
         for(let i = 0; i < gridWidth; i++){
             for(let j = 0; j < gridHeight; j++){

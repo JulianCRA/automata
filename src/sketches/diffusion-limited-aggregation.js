@@ -18,6 +18,12 @@ export default function d_l_a( p ) {
     let mobileCells;
     let sampledImg;
 
+    let hasStarted;
+
+    p.preload = function(){
+        if(!hasStarted) p.customRedraw();
+    }
+
     p.setup = function(){
         canvas = p.createCanvas(_CANVAS_SIZE,_CANVAS_SIZE);
         canvas.mouseClicked (p.immobilize);
@@ -25,15 +31,17 @@ export default function d_l_a( p ) {
         p.noSmooth();
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
-        gridWidth = props.w || 200;
-        gridHeight = props.h || 200;
-        substeps = gridWidth * gridHeight;
-        toroidal = props.t && true;
+    p.customRedraw = function(config = {}){
+        hasStarted = true;
 
-        q = props.q || 1;
-        k1 = props.k1 || 15;
-        k2 = props.k2 || 0;
+        gridWidth = config.w || 200;
+        gridHeight = config.h || 200;
+        substeps = gridWidth * gridHeight;
+        toroidal = config.t && true;
+
+        q = config.q || 1;
+        k1 = config.k1 || 15;
+        k2 = config.k2 || 0;
 
         mobileCells = Math.floor(substeps * k1 / 100);
 

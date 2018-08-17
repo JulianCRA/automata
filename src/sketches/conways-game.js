@@ -12,17 +12,25 @@ export default function conways_game( p ) {
     let seed;
     let toroidal;
 
+    let hasStarted;
+
+    p.preload = function(){
+        if(!hasStarted) p.customRedraw();
+    }
+
     p.setup = function() {
         p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
         p.frameRate(15);
         p.noStroke();
     }
     
-    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
-        gridWidth = props.w || 100;
-        gridHeight = props.h || 100;
-        seed = props.s || gridWidth*gridHeight/10;
-        toroidal = props.t && true;
+    p.customRedraw = function(config = {}){
+        hasStarted = true;
+        
+        gridWidth = config.w || 100;
+        gridHeight = config.h || 100;
+        seed = config.s || gridWidth*gridHeight/10;
+        toroidal = config.t && true;
 
         cellWidth = _CANVAS_SIZE / gridWidth;
         cellHeight = _CANVAS_SIZE / gridHeight;
@@ -35,6 +43,7 @@ export default function conways_game( p ) {
         }else{
             grid.shuffle(seed <= gridWidth*gridHeight ? seed : gridWidth*gridHeight/2, 0);
         }
+        
     }
 
     p.draw  = function(){

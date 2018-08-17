@@ -1,29 +1,34 @@
-import React from 'react'
-import p5 from 'p5'
+import React from "react";
+import p5 from "p5";
 
-export default class P5Wrapper extends React.Component {
-  componentDidMount() {
-    this.canvas = new p5(this.props.sketch, this.wrapper)
-    if( this.canvas.myCustomRedrawAccordingToNewPropsHandler ) {
-      this.canvas.myCustomRedrawAccordingToNewPropsHandler(this.props)
-    }
-  }
+//export default class P5Wrapper extends React.Component {
+export default class P5Wrapper extends React.PureComponent {
+	componentDidMount() {
+		this.canvas = new p5(this.props.sketch, this.wrapper);
+		if (this.canvas.customRedraw) {
+			this.canvas.customRedraw(this.props.config);
+		}
+	}
 
-  componentWillReceiveProps(newprops) {
-    if(this.props.sketch !== newprops.sketch){
-      this.canvas.remove()
-      this.canvas = new p5(newprops.sketch, this.wrapper)
-    }
-    if( this.canvas.myCustomRedrawAccordingToNewPropsHandler ) {
-      this.canvas.myCustomRedrawAccordingToNewPropsHandler(newprops)
-    }
-  }
+	componentDidUpdate(prevProps) {
+		console.log(this.props);
+		if (this.props.sketch !== prevProps.sketch) {
+			this.canvas.remove();
+			this.canvas = null;
+			this.canvas = new p5(this.props.sketch, this.wrapper);
+		}
 
-  componentWillUnmount() {
-    this.canvas.remove()
-  }
+		if (this.canvas.customRedraw) {
+			console.log("DIDUPDT");
+			this.canvas.customRedraw(this.props.config);
+		}
+	}
 
-  render() {
-    return <div ref={wrapper => this.wrapper = wrapper}></div>
-  }
+	componentWillUnmount() {
+		this.canvas.remove();
+	}
+
+	render() {
+		return <div ref={wrapper => (this.wrapper = wrapper)} />;
+	}
 }

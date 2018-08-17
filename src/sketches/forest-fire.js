@@ -22,6 +22,12 @@ export default function forest_fire( p ) {
     let canvas;
     let grid;
     let deadtime;
+
+    let hasStarted;
+
+    p.preload = function(){
+        if(!hasStarted) p.customRedraw();
+    }
     
     p.setup = function() {
         canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
@@ -30,20 +36,21 @@ export default function forest_fire( p ) {
         p.background('forestgreen');
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
+    p.customRedraw = function(config = {}){
+        hasStarted = true;
         
         if(canvas) p.background('forestgreen');
-        gridWidth = props.w || 300;
-		gridHeight = props.h || 300;
+        gridWidth = config.w || 300;
+		gridHeight = config.h || 300;
         cellWidth = _CANVAS_SIZE / gridWidth;
         cellHeight = _CANVAS_SIZE / gridHeight;
 
-        autocombustion = props.autocomb && true;
-        combustion = props.comb || 0.000001;
-        resistance = props.res || 0.4;
-        germination = props.ger || 0.005;
-        recovery = props.rec || 0.00000001;
-        toroidal = props.t && true;
+        autocombustion = config.autocomb && true;
+        combustion = config.comb || 0.000001;
+        resistance = config.res || 0.4;
+        germination = config.ger || 0.005;
+        recovery = config.rec || 0.00000001;
+        toroidal = config.t && true;
 
         deadtime = new Array(gridWidth);
         for(let i = 0; i < deadtime.length; i++){

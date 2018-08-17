@@ -17,17 +17,26 @@ export default function langtons_ant(p) {
   
     let canvas;
     
+    let hasStarted;
+
+    p.preload = function(){
+        if(!hasStarted) p.customRedraw();
+    }
+
     p.setup = function(){
-		canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
-		canvas.mouseClicked(p.addAnt);
+        console.log("SETUP LA");
+        canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
+        canvas.mouseClicked(p.addAnt);
         p.noStroke();
     }
     
-    p.myCustomRedrawAccordingToNewPropsHandler = function(props){
+    p.customRedraw = function(config = {}){
+        hasStarted = true;
+        
         if (canvas) p.clear();
-		gridWidth = props.w || 20;
-		gridHeight = props.h || 20;
-        ants = props.ants || [];
+		gridWidth = config.w || 20;
+		gridHeight = config.h || 20;
+        ants = config.ants || [];
         
         cellWidth = _CANVAS_SIZE / gridWidth;
         cellHeight = _CANVAS_SIZE / gridHeight;
