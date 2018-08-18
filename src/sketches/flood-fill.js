@@ -74,8 +74,6 @@ export default function flood_fill(p){
 				sampledImg.pixels[pixpos+3] = 0;
 			}
         }
-        
-        
     }
     
     p.dropPainter = function(){

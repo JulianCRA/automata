@@ -4,17 +4,18 @@ export default class InputRange extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			value : props.value || props.min || 1,
+			value : props.value || props.min || 0,
 			minimum : props.min || 0,
 			maximum : props.maximum || 100,
 			step : props.step || 1,
-			label : (props.label || "value") + " : "
+			label : (props.label || "value") + " : ",
+			ttip : props.ttip || "Set the value"
 		}
 	}
 
 	render(){
 		return(
-			<div>
+			<div title = {this.state.ttip}>
 				<input 
 					className = "slider"
 					type = "range" 
