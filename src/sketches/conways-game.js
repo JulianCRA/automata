@@ -15,7 +15,6 @@ export default function conways_game( p ) {
     let hasStarted;
 
     p.preload = function(){
-        console.log("CONWAYS PRELOAD");
         if(!hasStarted) p.customRedraw();
     }
 
@@ -31,7 +30,6 @@ export default function conways_game( p ) {
         
         gridWidth = config.w || 100;
         gridHeight = config.h || 100;
-        console.log(config.s);
         seed = config.s || 10;
         toroidal = config.t && true;
 
@@ -46,7 +44,6 @@ export default function conways_game( p ) {
         }else{
             grid.shuffle(seed/100*gridWidth*gridHeight, 0);
         }
-        console.log("CUSTOM CONWAYS");
     }
 
     p.draw  = function(){

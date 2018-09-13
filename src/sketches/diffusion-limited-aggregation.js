@@ -62,8 +62,9 @@ export default function d_l_a( p ) {
         for(let i = 0; i < otherCells.length; i++){
             mobilityTable[otherCells[i].x][otherCells[i].y] = true;
         }
-
+        
         p.initSampler();
+        if(canvas) p.loop();
     }
 
     p.initSampler = function(baseColor = [255, 255, 255]){
@@ -115,7 +116,6 @@ export default function d_l_a( p ) {
 
         if(mobileCells <= 0) {
             p.noLoop();
-            console.log("STOPPED");
         }
     }
 

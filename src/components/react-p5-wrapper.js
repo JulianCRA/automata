@@ -7,7 +7,6 @@ export default class P5Wrapper extends React.PureComponent {
 		this.canvas = new p5(this.props.sketch, this.wrapper);
 		if (this.canvas.customRedraw) {
 			this.canvas.customRedraw(this.props.config);
-			console.log("REDRAW DIDMOUNT "+this.props.sketch.name);
 		}
 	}
 
@@ -20,7 +19,6 @@ export default class P5Wrapper extends React.PureComponent {
 
 		if (this.canvas.customRedraw) {
 			this.canvas.customRedraw(this.props.config);
-			console.log("REDRAW DIDUPDT "+this.props.sketch.name);
 		}
 		
 	}

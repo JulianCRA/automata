@@ -38,7 +38,7 @@ export default function viral_replication(p){
 		k2 = config.k2 / 100000 || 7000 / 100000;
 		k3 = config.k3 / 100 || 35 / 100;
 		q = config.q || 50;
-		toroidal = false;
+		toroidal = config.t && true;
 
 		substeps = gridWidth * gridHeight;
 		colorDiff = 255/(q-1);
