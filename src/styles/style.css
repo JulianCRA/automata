@@ -12,6 +12,10 @@
 	font-weight: bold;
 }
 
+:root{
+	--panel-background-color: #315297;
+}
+
 *,
 *:before,
 *:after {
@@ -45,10 +49,11 @@
 }
 
 .wrapper > * {
-	background-color: #315297;
+	background-color: var(--panel-background-color);
 	color: #dddddd;
 	border-radius: 5px;
 	padding: 20px;
+	transition: all 3s;
 }
 
 .header,

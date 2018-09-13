@@ -22,7 +22,7 @@ export default class LifePanel extends Component {
 				<InputRange attr={"w"} minimum={20} maximum={300} value={this.config.w} label={"Columns"} ttip={"Set the number of columns"} cb={this.updateConfig}/>
 				<InputRange attr={"h"} minimum={20} maximum={300} value={this.config.h} label={"Rows"} ttip={"Set the number of rows"} cb={this.updateConfig}/>
 				<InputCheckBox attr={"t"} defaultChecked={this.config.t} label={"Toroidal"} ttip={"Choose whether the algorithm should work as a plane or as a toroid."} cb={this.updateConfig}/>
-				<InputRange kattr={"s"} minimum={1} maximum={100} value={this.config.s} label={"Percentage of alive cells"} ttip={"Set the number of cells that are \"alive\" when the algorithm starts"} cb={this.updateConfig}/>
+				<InputRange kattr={"s"} minimum={1} maximum={100} value={this.config.s} label={"Percentage of initial cells"} ttip={"Set the number of cells that are \"alive\" when the algorithm starts"} cb={this.updateConfig}/>
 			</React.Fragment>
 		)
 	}
