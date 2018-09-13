@@ -2,11 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles/bootstrap-reboot.css';
 import './styles/style.css';
-import './styles/slider.css';
 
-
-import P5SketchComponent from './P5SketchComponent';
-import SketchControlPanelComponent from './SketchControlPanelComponent';
+import P5SketchComponent from './components/P5SketchComponent';
+import SketchControlPanelComponent from './components/SketchControlPanelComponent';
 
 
 let buttons = document.getElementsByClassName('menu-button');

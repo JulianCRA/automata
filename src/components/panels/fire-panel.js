@@ -6,8 +6,8 @@ import InputCheckBox from '../InputCheckBox';
 export default class FirePanel extends Component {
 	constructor(props){
 		super(props);
-		this.config = {	w:50, 
-						h:50, 
+		this.config = {	w:150, 
+						h:150, 
 						t:false, 
 						autocomb:false,
 						comb:0.000001,

@@ -115,7 +115,8 @@ export default function forest_fire( p ) {
                             grid.next[xpos][ypos] = _BURNING;
                     }
                 }
-            }else if(autocombustion && Math.random() < combustion){       // "Roll" for spontaneous combustion
+            }else if(autocombustion && (Math.random() < combustion)){
+                console.log(combustion);       // "Roll" for spontaneous combustion
                 grid.next[xpos][ypos] = _BURNING;
             }
         }

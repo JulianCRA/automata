@@ -10,6 +10,7 @@
 	position: relative;
 	box-sizing: border-box;
 	line-height: 1;
+	margin-bottom: 1.2em;
 }
 .input-checkbox-container > div{
 	width: 15%;

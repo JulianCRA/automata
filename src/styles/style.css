@@ -144,3 +144,7 @@ li{
 	color: #ffffff;
 	cursor: pointer;
 }
+
+#controlPanel{
+	margin-top: 2em;
+}

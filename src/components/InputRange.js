@@ -1,5 +1,6 @@
 import React from 'react';
 
+import '../styles/slider.css';
 export default class InputRange extends React.Component{
 	constructor(props){
 		super(props);
@@ -8,8 +9,8 @@ export default class InputRange extends React.Component{
 			minimum : props.minimum || 0,
 			maximum : props.maximum || 100,
 			step : props.step || 1,
-			label : (props.label || "value") + " : ",
-			ttip : props.ttip || "Set the value",
+			label : (props.label || "value"),
+			ttip : props.ttip || "Set the value.",
 		}
 		
 		this.handleChange = this.handleChange.bind(this);
@@ -17,9 +18,9 @@ export default class InputRange extends React.Component{
 
 	render(){
 		return(
-			<div title = {this.state.ttip}>
+			<div className="slider-container" title = {this.state.ttip}>
 				<label className = "slider-label">
-					{this.state.label + this.state.value}
+					{this.state.label + " : " + this.state.value}
 				</label>
 				<input 
 					className = "slider"
