@@ -9,32 +9,8 @@ import flood_fill from './sketches/flood-fill';
 import P5Wrapper from './components/react-p5-wrapper';
 
 export default class P5SketchComponent extends Component {
-
-	state = {config:{	h:10, 
-						w:10
-					}
-			};
-
-	componentDidMount(props){
-		this.setState({sketch: this.selectSketch(this.props.sketch)});
-	}
-
-	componentDidUpdate(prevProps){
-		if(this.props.config !== prevProps.config){
-			this.setState({config:this.props.config});
-		}
-		if(this.props.sketch !== prevProps.sketch){
-			this.setState({sketch:this.selectSketch(this.props.sketch)});
-		}
-	}
-
-	render() {
-		return (
-			<div>
-			<P5Wrapper sketch={this.state.sketch} config={this.state.config}></P5Wrapper>
-			<button onClick={this.pressEvent.bind(this)}>Change Sketch</button>
-			</div>
-		);
+	render(){
+		return (<P5Wrapper sketch={this.selectSketch(this.props.sketch)} config={this.props.config}></P5Wrapper>);
 	}
 
 	selectSketch(id){
@@ -66,10 +42,6 @@ export default class P5SketchComponent extends Component {
 				break;
 		}
 		return newSketch;
-	}
-
-	pressEvent(){
-		this.setState({config:{...this.state.config, w:this.state.config.w+10}});
 	}
 }
  

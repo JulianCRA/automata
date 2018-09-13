@@ -24,9 +24,9 @@ export default function langtons_ant(p) {
     }
 
     p.setup = function(){
-        console.log("SETUP LA");
         canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
         canvas.mouseClicked(p.addAnt);
+        p.pixelDensity(1);
         p.noStroke();
     }
     
@@ -41,8 +41,8 @@ export default function langtons_ant(p) {
         cellWidth = _CANVAS_SIZE / gridWidth;
         cellHeight = _CANVAS_SIZE / gridHeight;
 
-		grid = new Grid(gridWidth, gridHeight, 0);
-	}
+        grid = new Grid(gridWidth, gridHeight, 0);
+    }
    
     p.draw = function(){
         for(let i = 0; i < ants.length; i++){

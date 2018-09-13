@@ -30,7 +30,8 @@ export default function flood_fill(p){
         canvas.mouseClicked(p.dropPainter);
         paintersLayer = p.createGraphics(_CANVAS_SIZE, _CANVAS_SIZE);
         paintersLayer.noStroke();
-        //p.frameRate(2);
+        paintersLayer.pixelDensity(1);
+        p.pixelDensity(1);
         p.noSmooth();
         p.noStroke();
         p.noLoop();

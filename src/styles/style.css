@@ -124,8 +124,13 @@ li{
 	display: inline-block;
 }
 
+.footer{
+	display: flex;
+	flex-direction: row;
+}
 #ghlink{
-	display: inline-block;
+	margin-left: auto;
+	/*display: inline-block;*/
 	width: 51px;
 }
 #ghlink > img{

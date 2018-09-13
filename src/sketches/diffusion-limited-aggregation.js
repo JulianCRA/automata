@@ -28,6 +28,7 @@ export default function d_l_a( p ) {
         canvas = p.createCanvas(_CANVAS_SIZE,_CANVAS_SIZE);
         canvas.mouseClicked (p.immobilize);
         p.noStroke();
+        p.pixelDensity(1);
         p.noSmooth();
     }
 

@@ -1,13 +1,14 @@
 import React from 'react';
+import '../styles/checkbox.css';
 
 export default class InputRange extends React.Component{
 	constructor(props){
 		super(props);
-		console.log(props.defaultChecked === true);
+		
 		this.state = {
 			isChecked : (props.defaultChecked === true),
 			label : (props.label || "value") + " : ",
-			ttip : props.ttip || "Set the value"
+			ttip : props.ttip || "Set the value."
 		}
 		
 		this.toggleChange = this.toggleChange.bind(this);
@@ -24,7 +25,7 @@ export default class InputRange extends React.Component{
 						className = "input-checkbox"
 						type = "checkbox" 
 						checked = {this.state.isChecked}
-						onChange = {this.toggleChange}
+						onChange = {()=>{}}
 					/>
 				</div>
 			</div>
@@ -32,10 +33,7 @@ export default class InputRange extends React.Component{
 	}
 
 	toggleChange(){
-		this.setState({isChecked:!this.state.isChecked});
-	}
-
-	getValue(){
-		return this.state.value * 1;
+		if(typeof this.props.cb === "function") this.props.cb(this.props.attr, !this.state.isChecked);
+		this.setState({isChecked : !this.state.isChecked});
 	}
 }

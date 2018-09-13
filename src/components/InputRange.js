@@ -4,35 +4,38 @@ export default class InputRange extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			value : props.value || props.min || 0,
-			minimum : props.min || 0,
+			value : props.value || props.minimum || 0,
+			minimum : props.minimum || 0,
 			maximum : props.maximum || 100,
 			step : props.step || 1,
 			label : (props.label || "value") + " : ",
-			ttip : props.ttip || "Set the value"
+			ttip : props.ttip || "Set the value",
 		}
+		
+		this.handleChange = this.handleChange.bind(this);
 	}
 
 	render(){
 		return(
 			<div title = {this.state.ttip}>
-				<input 
-					className = "slider"
-					type = "range" 
-					min = {this.state.min}
-					max = {this.state.max}
-					step = {this.state.step}
-					value = {this.state.value}
-					onChange = {(event) => this.setState({value: event.target.value})}
-				/>
 				<label className = "slider-label">
 					{this.state.label + this.state.value}
 				</label>
+				<input 
+					className = "slider"
+					type = "range" 
+					min = {this.state.minimum}
+					max = {this.state.maximum}
+					step = {this.state.step}
+					value = {this.state.value}
+					onChange = {this.handleChange}
+				/>
 			</div>
 		);
 	}
 
-	getValue(){
-		return this.state.value * 1;
+	handleChange(event){
+		this.setState({value: event.target.value*1});
+		if(typeof this.props.cb === "function") this.props.cb(this.props.attr, event.target.value*1);
 	}
 }

@@ -10,6 +10,7 @@ export default function viral_replication(p){
 	let k1;				// Infection rate.
 	let k2;				// Base rate.
 	let k3;				// Reproduction rate.
+	let toroidal;
 
 	let substeps;
 	let colorDiff;
@@ -37,6 +38,7 @@ export default function viral_replication(p){
 		k2 = config.k2 / 100000 || 7000 / 100000;
 		k3 = config.k3 / 100 || 35 / 100;
 		q = config.q || 50;
+		toroidal = false;
 
 		substeps = gridWidth * gridHeight;
 		colorDiff = 255/(q-1);
@@ -96,7 +98,7 @@ export default function viral_replication(p){
 					grid.next[xpos][ypos]--;
 				}
 				else{											// No? Should it 'divide'?
-					neighborhood = grid.getNeighborhood(xpos, ypos, 1, false);   // Moore neighbprhood with Tchebychev distance of 1
+					neighborhood = grid.getNeighborhood(xpos, ypos, 1, toroidal);   // Moore neighbprhood with Tchebychev distance of 1
 					if(neighborhood.hasEmptySpaces && Math.random() < k3){   // Yeah, divide it.
 						let newBorn = neighborhood.emptySpaces[Math.floor(Math.random() * neighborhood.emptySpaces.length)];
 						grid.next[newBorn.x][newBorn.y] = q-1;
@@ -106,7 +108,7 @@ export default function viral_replication(p){
 			else{												// Not healthy, huh?
 				if(grid.current[xpos][ypos] === 0){				// Last stage of infection?
 					grid.removeCellAt(xpos,ypos);
-					neighborhood = grid.getNeighborhood(xpos, ypos, 1, false);   // Moore neighbprhood with Tchebychev distance of 1
+					neighborhood = grid.getNeighborhood(xpos, ypos, 1, toroidal);   // Moore neighbprhood with Tchebychev distance of 1
 					if(neighborhood.hasNeighbors){
 						for(let i = 0; i < neighborhood.neighbors.length; i++){
 							if( grid.next[neighborhood.neighbors[i].x][neighborhood.neighbors[i].y] > 0  && Math.random()<k1)

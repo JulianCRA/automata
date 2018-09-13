@@ -33,6 +33,7 @@ export default function forest_fire( p ) {
         canvas = p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
         canvas.mouseClicked(p.lightningStrike);
         p.noStroke();
+        p.pixelDensity(1);
         p.background('forestgreen');
     }
 
@@ -46,10 +47,10 @@ export default function forest_fire( p ) {
         cellHeight = _CANVAS_SIZE / gridHeight;
 
         autocombustion = config.autocomb && true;
-        combustion = config.comb || 0.000001;
-        resistance = config.res || 0.4;
-        germination = config.ger || 0.005;
-        recovery = config.rec || 0.00000001;
+        combustion = config.comb/100 || 0.000001;
+        resistance = config.res/100 || 0.4;
+        germination = config.ger/100 || 0.005;
+        recovery = config.rec/100 || 0.00000001;
         toroidal = config.t && true;
 
         deadtime = new Array(gridWidth);

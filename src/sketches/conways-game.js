@@ -15,12 +15,14 @@ export default function conways_game( p ) {
     let hasStarted;
 
     p.preload = function(){
+        console.log("CONWAYS PRELOAD");
         if(!hasStarted) p.customRedraw();
     }
 
     p.setup = function() {
         p.createCanvas(_CANVAS_SIZE, _CANVAS_SIZE);
-        p.frameRate(15);
+        p.frameRate(12);
+        p.pixelDensity(1);
         p.noStroke();
     }
     
@@ -29,7 +31,8 @@ export default function conways_game( p ) {
         
         gridWidth = config.w || 100;
         gridHeight = config.h || 100;
-        seed = config.s || gridWidth*gridHeight/10;
+        console.log(config.s);
+        seed = config.s || 10;
         toroidal = config.t && true;
 
         cellWidth = _CANVAS_SIZE / gridWidth;
@@ -41,9 +44,9 @@ export default function conways_game( p ) {
             for(let i = 0; i < seed.length; i++)
                 grid.current[seed[i].x][seed[i].y] = 0;
         }else{
-            grid.shuffle(seed <= gridWidth*gridHeight ? seed : gridWidth*gridHeight/2, 0);
+            grid.shuffle(seed/100*gridWidth*gridHeight, 0);
         }
-        
+        console.log("CUSTOM CONWAYS");
     }
 
     p.draw  = function(){
