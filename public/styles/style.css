@@ -1,4 +1,4 @@
-@font-face {
+/*@font-face {
     font-family: noto;
 	src: url("../fonts/NotoSans-Regular.ttf");
 	font-weight: normal;
@@ -8,7 +8,7 @@
     font-family: noto;
 	src: url("../fonts/NotoSans-Bold.ttf");
 	font-weight: bold;
-}
+}*/
 
 :root{
 	--panel-background-color: #315297;
@@ -83,7 +83,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-family: noto;
+	font-family: noto, Arial, Helvetica, sans-serif;
 }
 
 li{

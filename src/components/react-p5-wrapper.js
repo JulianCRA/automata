@@ -1,5 +1,5 @@
 import React from "react";
-import p5 from "p5";
+import p5 from "../../node_modules/p5/lib/p5.min.js";
 
 //export default class P5Wrapper extends React.Component {
 export default class P5Wrapper extends React.PureComponent {
