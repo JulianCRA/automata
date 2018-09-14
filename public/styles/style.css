@@ -1,14 +1,12 @@
-@import url("slider.css");
-
 @font-face {
     font-family: noto;
-	src: url("/fonts/NotoSans-Regular.ttf");
+	src: url("../fonts/NotoSans-Regular.ttf");
 	font-weight: normal;
 }
 
 @font-face {
     font-family: noto;
-	src: url("/fonts/NotoSans-Bold.ttf");
+	src: url("../fonts/NotoSans-Bold.ttf");
 	font-weight: bold;
 }
 
@@ -94,7 +92,7 @@ li{
 	flex: 0 0 auto;
 }
 
-.menu-button {
+.menu-button{
 	/*box-sizing: border-box;
 	flex: 0 0 auto;*/
 	margin: 5px;
@@ -118,6 +116,7 @@ li{
 	/*box-sizing: border-box;*/
 }
 
+.current,
 .menu-button:focus {
 	outline: 0;
 	background-color: #eeeeee;

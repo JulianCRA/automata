@@ -1,22 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles/bootstrap-reboot.css';
-import './styles/style.css';
 
 import P5SketchComponent from './components/P5SketchComponent';
 import SketchControlPanelComponent from './components/SketchControlPanelComponent';
-
 
 let buttons = document.getElementsByClassName('menu-button');
 for(let btn of buttons){
 	btn.addEventListener('click', selectSketch);
 }
 
-let currentSketch;
+let currentSketch;	
 
 function selectSketch(event){
+	let btn;
+	if(currentSketch !== undefined){
+		btn = document.getElementById(currentSketch);
+		btn.classList.remove('current');
+	}
+
 	currentSketch = event.target.id;
+	
 	ReactDOM.render(<SketchControlPanelComponent panel={currentSketch} onChange={updateConfig}/>, document.getElementById('controlPanel'));
+	
+	btn = document.getElementById(currentSketch);
+	btn.classList.add('current');
 }
 
 function updateConfig(obj){
@@ -39,3 +47,4 @@ function changeColor(){
 	}
 }
 
+selectSketch({target:{id:'life'}});
